@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html>
+<body>
+<form id="searchForm">
+  <input type="text" id="username" name="username" placeholder="username"><br>
+  <input type="submit" value="load">
+</form>
+<div id="result"></div>
+<script>
+let apiEndpoint = 'https://web3.inscribe.today/https://unisat.io/brc20-api-v2/inscriptions/category/text/search/v2?name={username}.bitter';
+
+// Parse the URL and get the username if exists
+let url = new URL(window.location.href);
+let parts = url.pathname.split('/');
+let username = parts[parts.length - 1]; // get the last part
+console.log(username);
+// If the username exists in the URL, we skip the form and fetch the results
+if(username) {
+  fetchResults(username);
+}
+
+document.getElementById('searchForm').addEventListener('submit', function(e) {
+  e.preventDefault();
+  let username = document.getElementById('username').value;
+  console.log(username)
+  if(username) {
+    fetchResults(username);
+  }
+});
+
+function fetchResults(username) {
+  let apiURL = apiEndpoint.replace('{username}', username);
+  console.log(apiURL);
+  fetch(apiURL)
+    .then(response => response.json())
+    .then(data => {
+      if (data.code === 0 && data.data.matchCount > 0) {
+        let inscriptions = data.data.detail;
+        let matchedInscription = inscriptions.find(inscription => inscription.inscriptionName === `${username}.bitter` && inscription.content);
+        if (matchedInscription) {
+          document.getElementById('result').innerText = matchedInscription.content;
+        } else {
+          document.getElementById('result').innerText = 'User has not posted.';
+        }
+      } else {
+        document.getElementById('result').innerText = 'No user found with the given username.';
+      }
+    });
+}
+</script>
+</body>
+</html>
