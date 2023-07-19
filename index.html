@@ -22,11 +22,12 @@ async function fetchData() {
 
         combinedData = combinedData.map(item => {
             let username = item.inscriptionName.match(/"username":\s*"(.*?).bitter"/)?.[1] || '';
-            let ordinal = item.inscriptionName.match(/"ordinal":\s*(.*?),/)?.[1] || '';
+            let content = item.inscriptionName.match(/"content":\s*(.*?),/)?.[1] || '';
+            let date = new Date(item.timestamp * 1000).toISOString();
             return {
                 username,
-                ordinal,
-                timestamp: item.timestamp
+                content,
+                timestamp: date
             };
         });
 
@@ -40,7 +41,7 @@ fetchData().then(data => {
     const resultDiv = document.getElementById('result');
     data.forEach(item => {
         const itemDiv = document.createElement('div');
-        itemDiv.textContent = `Username: ${item.username}, Ordinal: ${item.ordinal}, Timestamp: ${item.timestamp}`;
+        itemDiv.textContent = `${item.content} ${item.username} at ${item.timestamp}`;
         resultDiv.appendChild(itemDiv);
     });
 });
