@@ -28,14 +28,19 @@ async function fetchData() {
 
         combinedData = combinedData.map(item => {
             const cleanedJSON = cleanJSONString(item.inscriptionName);
-            const inscriptionNameJson = JSON.parse(cleanedJSON);
-            const { username, ordinal } = inscriptionNameJson;
-            return {
-                username,
-                ordinal,
-                timestamp: item.timestamp
-            };
-        });
+            try {
+                const inscriptionNameJson = JSON.parse(cleanedJSON);
+                const { username, ordinal } = inscriptionNameJson;
+                return {
+                    username,
+                    ordinal,
+                    timestamp: item.timestamp
+                };
+            } catch (error) {
+                console.log('Invalid JSON format in inscription:', cleanedJSON);
+                return null; // or return default values for username, ordinal and timestamp if desired
+            }
+        }).filter(item => item);  // Filter out null values
 
         return combinedData;
     } catch (error) {
